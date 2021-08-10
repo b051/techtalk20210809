@@ -1,0 +1,6 @@
+{
+  "watch": ["server", "models", "redis", "resolvers"],
+  "ext": "ts",
+  "ignore": ["test"],
+  "exec": "npm restart"
+}

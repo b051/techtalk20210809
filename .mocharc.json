@@ -1,0 +1,8 @@
+{
+  "extension": ["js"],
+  "spec": "dist/test/**/*.spec.js",
+  "enable-source-maps": true,
+  "parallel": false,
+  "exit": true,
+  "timeout": 15000
+}

@@ -1,0 +1,6 @@
+CREATE DATABASE `techtalk_20210809`;
+INSERT INTO mysql.user (host, user) VALUES ('%', 'root');
+INSERT INTO mysql.user (host, user) VALUES ('172.18.%', 'root');
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'172.18.%' IDENTIFIED BY '' WITH GRANT OPTION;
+GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY '' WITH GRANT OPTION;
+FLUSH PRIVILEGES;

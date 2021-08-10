@@ -1,0 +1,35 @@
+version: '3.7'
+
+networks:
+  mysql:
+    external: true
+  redis:
+    external: true
+
+services:
+  api:
+    image: techtalk/api:20110809
+    build:
+      context: ../..
+      dockerfile: Dockerfile
+      target: builder
+    command: tail -f /dev/null
+    ports:
+      - 3032:3030
+    environment:
+      APOLLO_KEY:
+      APOLLO_GRAPH_VARIANT:
+      APOLLO_SCHEMA_REPORTING:
+      ENV_YML: /root/env.yml
+      DATABASE_URL: mysql://root@mysql:3306/techtalk_20210809
+      NODE_ENV:
+      REDIS_URL: redis://redis:6379
+    networks:
+      - mysql
+      - redis
+    working_dir: /runtime
+    volumes:
+      - ../..:/runtime
+      - ${HOME}/techtalk_env.yml:/root/env.yml
+      - ${HOME}/.zsh_history:/root/.zsh_history
+  

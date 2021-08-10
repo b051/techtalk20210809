@@ -1,0 +1,12 @@
+node_modules/
+dist/
+
+.env
+tmp
+cli/tmp
+
+# OSX
+.DS_Store
+
+# Editor
+.vscode/settings.json

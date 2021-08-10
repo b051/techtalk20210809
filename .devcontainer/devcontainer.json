@@ -1,0 +1,23 @@
+{
+	"name": "api",
+
+	"dockerComposeFile": [
+		"../docker/techtalk/docker-compose.yml"
+	],
+	"service": "api",
+	"runServices": ["api"],
+	"workspaceFolder": "/runtime",
+	
+	"settings": { 
+		"terminal.integrated.shell.linux": "/bin/zsh"
+	},
+
+	"initializeCommand": "docker build -t b051/typescript:12-alpine ./docker/base_image",
+	"extensions": [
+		"dbaeumer.vscode-eslint",
+		"apollographql.vscode-apollo",
+		"neilding.language-liquid",
+		"eamodio.gitlens",
+		"donjayamanne.githistory"
+	]
+}

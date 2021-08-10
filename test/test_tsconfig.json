@@ -1,0 +1,13 @@
+{
+  "extends": "../tsconfig",
+  "include": ["../test", "../resolvers"],
+  "exclude": [
+    "node_modules"
+  ],
+  "compilerOptions": {
+    "types": [
+      "node",
+      "mocha"
+    ]
+  }
+}

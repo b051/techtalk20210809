@@ -1,0 +1,43 @@
+version: "3.7"
+
+networks:
+  mysql:
+    driver: bridge
+    name: mysql
+  redis:
+    driver: bridge
+    name: redis
+
+volumes:
+  mysql:
+  redis:
+
+services:
+  mysql:
+    image: mysql/mysql-server:5.7
+    networks:
+      - mysql
+    restart: always
+    ports:
+      - 3306:3306
+    environment:
+      MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+    volumes:
+      - mysql:/var/lib/mysql
+      - type: bind
+        source: ./initdb.d/create-db.sql
+        target: /docker-entrypoint-initdb.d/create-db.sql
+        read_only: true
+    command: mysqld --sql_mode="" --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --bind-address=0.0.0.0
+
+  redis:
+    image: redis:5.0.7-alpine
+    networks:
+      - redis
+    restart: always
+    ports:
+      - 6379:6379
+    volumes:
+      - redis:/data
+
+
