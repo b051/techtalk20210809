@@ -4,8 +4,6 @@ const redis = new Redis(process.env.REDIS_URL)
 
 export default redis
 
-export const dedup = <T>(items: T[]): T[] => Array.from(new Set(items))
-
 const __lift_states = {}
 
 export const time = async <T>(label: string, fn: () => Promise<T>): Promise<T> => {

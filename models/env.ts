@@ -19,7 +19,11 @@ export enum Gender {
 registerEnumType(Gender, { name: 'Gender' })
 
 interface Env {
-  private_secret: string
+  jwt: {
+    rs256_private_key: string
+    rs256_public_key: string
+    hs256_secret: string
+  }
   auth0: {
     domain: string
     auth_domain: string
@@ -29,7 +33,7 @@ interface Env {
   }
 }
 
-const all_env = yaml.load(fs.readFileSync(process.env.ENV_YML).toString('utf-8')) as { [key: string]: Env }
+const all_env = yaml.load(fs.readFileSync(process.env.ENV_YML, 'utf-8'))
 export const stage = process.env.NODE_ENV || 'staging'
 console.log({ stage })
-export const env = all_env[stage]
+export const env: Env = all_env[stage]

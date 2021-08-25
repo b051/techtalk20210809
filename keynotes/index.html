@@ -4,36 +4,357 @@
 		<meta charset="utf-8">
 		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 
-		<title>reveal.js</title>
+		<title>Security Topic</title>
 
 		<link rel="stylesheet" href="dist/reset.css">
 		<link rel="stylesheet" href="dist/reveal.css">
 		<link rel="stylesheet" href="dist/theme/black.css">
-
-		<!-- Theme used for syntax highlighted code -->
 		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+		<style>
+			.symbol {
+				color: cadetblue;
+				font-style: italic;
+			}
+			code {
+				font-size: 0.9em;
+			}
+			.fade {
+				opacity: 0.5;
+			}
+
+			section > table {
+				font-family: 'PTMono', Courier, monospace;
+				font-size: 0.5em;
+			}
+		</style>
 	</head>
 	<body>
 		<div class="reveal">
 			<div class="slides">
-				<section>Slide 1</section>
-				<section>Slide 2</section>
+
+				<section>
+					<h2>Security</h2>
+					<p>symmetric & asymmetric encryption</p>
+				</section>
+
+				<section>
+					<section>
+						<h2>Authentication</h2>
+						<ul>
+							<li>Authenticate user by password</li>
+						</ul>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Login</h3>
+						<aside class="notes">
+							<a href="https://stackoverflow.com/a/60905902">reference 1</a>
+							<a href="http://zhangshen147.online/post/openssl-rsa">OpenSSL用私钥生成公钥？ - Lawliet's blog</a>
+							<a href="https://cjting.me/2020/03/13/rsa/">RSA 的原理与实现 - CJ Ting's Blog</a>
+						</aside>
+						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers>
+							function(email: string, password: string) {
+								const user = getUser(email)
+								if (email_not_found_or_wrong_password) {
+									throw new Error(...)
+								}
+								return (...)
+							}
+						</script></code></pre>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Login</h3>
+						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers="|6">
+							function(email: string, password: string) {
+								const user = getUser(email)
+								if (email_not_found_or_wrong_password) {
+									throw new Error(...)
+								}
+								return access_token({ sub: user.id })
+							}
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Authentication</h2>
+						<ul>
+							<li class="fade">Authenticate user by password</li>
+							<li>Access token represents the user</li>
+						</ul>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Access Token</h3>
+						<pre data-id="authentication"><code class="hljs javascript" data-trim>
+							import * as jwt from 'jsonwebtoken'
+							
+							const SECRET = '...'
+
+							const access_token = (payload: object) => {
+								return jwt.sign(payload, SECRET, {
+									'expiresIn': '1d'
+								})
+							}
+						</code></pre>
+						<p class="fragment fade-up">Secret exposed!</p>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Access Token</h3>
+						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers="2,5">
+							import * as jwt from 'jsonwebtoken'
+							import { env } from './env'
+
+							const access_token = (payload: object) => {
+								return jwt.sign(payload, env.jwt.hs256_secret, {
+									expiresIn: '1d'
+								})
+							}
+						</code></pre>
+						<pre class="fragment"><code class="hljs javascript" data-trim>
+							import * as yaml from 'js-yaml'
+							interface Env {
+								jwt: {
+									hs256_secret: string
+								}
+							}
+							const env_yml = fs.readFileSync(process.env.ENV_YML, 'utf-8')
+							export const env: Env = yaml.load(env_yml)[process.env.NODE_ENV]
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Authentication</h2>
+						<ul>
+							<li class="fade">Authenticate user by password</li>
+							<li class="fade">Access token represents the user</li>
+							<li>Hashing password</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>Hashing</h3>
+						<table>
+							<thead>
+								<tr>
+									<th>email</th>
+									<th>password</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr>
+									<td>rex@interactivelabs.co</td>
+									<td>QPkvjgLrTOVb</td>
+								</tr>
+							</tbody>
+						</table>
+						<p class="fragment fade-up">Leak!</p>
+					</section>
+
+					<section>
+						<h3>Choose a hashing method</h3>
+						<ul>
+							<li>argon2</li>
+							<li>bcrypt</li>
+							<li>hmac</li>
+							<li>ldap</li>
+							<li>md5</li>
+							<li>sha512</li>
+							<li>pbkdf2</li>
+						</ul>
+						<p>...</p>
+					</section>
+
+					<section>
+						<h3>Hashing</h3>
+						<pre data-id="hashing"><code class="hljs javascript" data-trim data-line-numbers="|4,7,11,12">
+							import * as phc from '@phc/format'
+
+							const hash_pbkdf2 = (password: string) => {
+								const salt = crypto.randomBytes(16)
+								const i = 100_000
+								const l = 64
+								const hash = crypto.pbkdf2Sync(password, salt, i, l, 'sha512')
+								return phc.serialize({
+									id: `pbkdf2-sha512`,
+									params: { i, l },
+									salt,
+									hash
+								})
+							}
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Redact sensetive information</h3>
+						<pre data-id="hashing"><code class="hljs javascript" data-trim>
+							console.log(JSON.stringify({
+								path: "/login",
+								method: "POST",
+								request: {
+									email: ctx.request.email,
+									password: "[redact]"
+								}
+							}))
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<section>
+						<h2>Authentication</h2>
+						<ul>
+							<li class="fade">Authenticate user by password</li>
+							<li class="fade">Access token represents the user</li>
+							<li class="fade">Hashing password</li>
+							<li>More about Json Web Token</li>
+						</ul>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Json Web Token</h3>
+						
+						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers>
+							function(email: string, password: string) {
+								const user = getUser(email)
+								if (!user || !user.verifyPassword(password)) {
+									throw new Error(...)
+								}
+								return access_token({ sub: user.id })
+							}
+						</code></pre>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Json Web Token</h3>
+						<p>Should we do:</p>
+						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers>
+							function(email: string, password: string) {
+								...
+								return access_token({
+									"sub": user.id,
+									"user": JSON.stringify(user),
+									"groups": ...
+								})
+							}
+						</code></pre>
+					</section>
+
+					<section>
+						<h3>Json Web Token Structure</h3>
+						<pre><code data-trim clas="hljs javascript">
+							token.split('.').map(part => Buffer.from(part, 'base64'))
+							=>
+							[
+								'{"alg":"HS256","typ":"JWT"}', // header
+								'{"sub":"1","iat":1629876066,"exp":1629962466}', //payload
+								&lt;Buffer ...&gt; //signature
+							]
+						</code></pre>
+						<p class="fragment fade-up">We should not store sensetive information in the token</p>
+					</section>
+				</section>
+					
+				<section>
+					<section>
+						<h2>Authentication</h2>
+						<ul>
+							<li class="fade">Authenticate user by password</li>
+							<li class="fade">Access token represents the user</li>
+							<li class="fade">Hashing password</li>
+							<li class="fade">More about Json Web Token</li>
+							<li>RSA</li>
+						</ul>
+					</section>
+
+					<section>
+						<h3>RS256</h3>
+						<p>asymmetric encryption</p>
+						<pre data-id="jwt"><code class="hlts javascript" data-trim>
+							import * as jwt from 'jsonwebtoken'
+							import { env } from './env'
+	
+							const token = jwt.sign(payload, env.jwt.rs256_private_key, {
+								algorithm: 'RS256',
+								expiresIn: '1d'
+							})
+
+							jwt.verify(token, env.jwt.rs256_public_key)
+						</code></pre>
+					</section>
+
+					<section>
+						<p>When to use asymmetric encryption?</p>
+						<ul>
+							<li class="fragment">Can't share the same secret</li>
+							<li class="fragment">Need to regularly rotate your secret</li>
+							<li class="fragment">Micro-services</li>
+							<li class="fragment">Act as an online service provider</li>
+						</ul>
+					</section>
+
+					<section style="text-align: left;">
+						<h2>RSA Brief</h2>
+						<aside>
+							<a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA (cryptosystem)</a>
+							<a href="https://en.wikipedia.org/wiki/Euler%27s_totient_function">Euler's totient function</a>
+						</aside>
+						<p>find three very large positive integers <code class="symbol">e</code>, <code  class="symbol">d</code>, and <code class="symbol">n</code></p>
+						<p>use public key (<code class="symbol">e</code>, <code class="symbol">n</code>) to encrypt <code class="symbol">m</code>:</p>
+						\[ c\equiv m^{e}{\pmod {n}} \]
+						<p>use private key (<code  class="symbol">d</code>, <code class="symbol">n</code>) to decrypt:</p>
+						\[ m\equiv c^{d}{\pmod {n}} \]
+					</section>
+
+					<section>
+						<h2>Generate Key Pairs</h2>
+						<pre><code class="hljs shell" data-trim>
+						ssh-keygen -t rsa -b 4096 -m PEM -f jwtRS256.key
+						openssl rsa -in jwtRS256.key -pubout -outform PEM -out jwtRS256.pub
+						</code></pre>
+						<pre><code class="shell" data-trim>
+							openssl rsa -in jwtRS256.key -text -noout
+							=>
+							version           Version,
+							modulus           INTEGER,  -- n
+							publicExponent    INTEGER,  -- e
+							privateExponent   INTEGER,  -- d
+							prime1            INTEGER,  -- p
+							prime2            INTEGER,  -- q
+							exponent1         INTEGER,  -- d mod (p-1)
+							exponent2         INTEGER,  -- d mod (q-1)
+							coefficient       INTEGER,  -- (inverse of q) mod p
+							otherPrimeInfos   OtherPrimeInfos OPTIONAL
+						</code></pre>
+					</section>
+				</section>
+
+				<section>
+					<h3>Summary</h3>
+					<ul>
+						<li class="fragment">Assume code is insecure and be paranoid.</li>
+					</ul>
+				</section>
+
+				<section>
+					<h1>Thanks!</h1>
+				</section>
 			</div>
 		</div>
 
 		<script src="dist/reveal.js"></script>
-		<script src="plugin/notes/notes.js"></script>
-		<script src="plugin/markdown/markdown.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
+		<script src="plugin/math/math.js"></script>
+
 		<script>
-			// More info about initialization & config:
-			// - https://revealjs.com/initialization/
-			// - https://revealjs.com/config/
 			Reveal.initialize({
 				hash: true,
-
-				// Learn about plugins: https://revealjs.com/plugins/
-				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+				plugins: [RevealHighlight, RevealMath]
 			});
 		</script>
 	</body>
