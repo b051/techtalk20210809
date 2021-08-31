@@ -173,7 +173,7 @@
 
 					<section>
 						<h3>Choose a hashing method</h3>
-						<ul>
+						<ul style="text-align: left;">
 							<li>argon2</li>
 							<li>bcrypt</li>
 							<li>hmac</li>
@@ -393,13 +393,14 @@
 		</div>
 
 		<script src="dist/reveal.js"></script>
+		<script src="plugin/zoom/zoom.js"></script>
 		<script src="plugin/highlight/highlight.js"></script>
 		<script src="plugin/math/math.js"></script>
 
 		<script>
 			Reveal.initialize({
 				hash: true,
-				plugins: [RevealHighlight, RevealMath]
+				plugins: [RevealHighlight, RevealMath, RevealZoom]
 			});
 		</script>
 	</body>
