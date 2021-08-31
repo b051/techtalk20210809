@@ -104,7 +104,7 @@
 
 					<section data-auto-animate data-auto-animate-unmatched="fade">
 						<h3>Access Token</h3>
-						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers="2,5">
+						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers="|2,5">
 							import * as jwt from 'jsonwebtoken'
 							import { env } from './env'
 
@@ -124,6 +124,21 @@
 							const env_yml = fs.readFileSync(process.env.ENV_YML, 'utf-8')
 							export const env: Env = yaml.load(env_yml)[process.env.NODE_ENV]
 						</code></pre>
+					</section>
+
+					<section data-auto-animate data-auto-animate-unmatched="fade">
+						<h3>Where to keep secret?</h3>
+						<ul>
+							<li>Server
+								<ul>
+									<li class="fragment fade-up">local env files (do not commit)</li>
+								</ul>
+							</li>
+							<li>Web/Native<ul>
+								<li class="fragment fade-up">only visible to CI/CD</li>
+								<li class="fragment fade-up">key-value service</li>
+							</ul></li>
+						</ul>
 					</section>
 				</section>
 
@@ -298,9 +313,9 @@
 						</ul>
 					</section>
 
-					<section style="text-align: left;">
+					<section style="text-align: left;" data-auto-animate data-auto-animate-unmatched="fade">
 						<h2>RSA Brief</h2>
-						<aside>
+						<aside style="display: none;">
 							<a href="https://en.wikipedia.org/wiki/RSA_(cryptosystem)">RSA (cryptosystem)</a>
 							<a href="https://en.wikipedia.org/wiki/Euler%27s_totient_function">Euler's totient function</a>
 						</aside>
@@ -309,6 +324,34 @@
 						\[ c\equiv m^{e}{\pmod {n}} \]
 						<p>use private key (<code  class="symbol">d</code>, <code class="symbol">n</code>) to decrypt:</p>
 						\[ m\equiv c^{d}{\pmod {n}} \]
+					</section>
+
+					<section style="text-align: left;" data-auto-animate data-auto-animate-unmatched="fade">
+						<h2>RSA Brief</h2>
+						<ol style="font-size:16px; text-align: left;">
+							<li>Choose two distinct prime numbers, such as
+								\[ p=61 \text{ and } q=53 \]
+							</li>
+							<li>Compute <code class="symbol">n</code> = <code class="symbol">pq</code> giving
+								\[ n=61 \times 53=3233 \]
+							</li>
+							<li>Compute the Carmichael's totient function of the product as <code class="symbol">λ(n)</code> = <code class="symbol">lcm(p − 1, q − 1)</code> giving
+								\[ \lambda (3233)=\operatorname {lcm} (60,52)=780 \]
+							</li>
+							<li>Choose any number 1 &lt; <code class="symbol">e</code> &lt; 780 that is coprime to 780.
+								\[ \text{Let } e=17 \]
+							</li>
+							<li>Compute <code class="symbol">d</code>, the modular multiplicative inverse of <code class="symbol">e (mod λ(n))</code> yielding,
+								\[ 17d\equiv {1}{\pmod {780}} \]
+								\[ d=413 \]
+							</li>
+							<li>For instance, in order to encrypt <code class="symbol">m</code> = 65, we calculate
+								\[ c=65^{17}{\bmod {3233}}=2790 \]
+							</li>
+							<li>To decrypt <code class="symbol">c</code> = 2790, we calculate
+								\[ m=2790^{413}{\bmod {3233}}=65 \]
+							</li>
+					</p>
 					</section>
 
 					<section>
@@ -338,6 +381,8 @@
 					<h3>Summary</h3>
 					<ul>
 						<li class="fragment">Assume code is insecure and be paranoid.</li>
+						<li class="fragment">Hide secrets from code, database, logs.</li>
+						<li class="fragment">When required, only expose public keys.</li>
 					</ul>
 				</section>
 

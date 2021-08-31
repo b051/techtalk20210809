@@ -14,7 +14,7 @@ async function main() {
   console.timeEnd('db.sync()..')
   const app = new Koa()
   app.use(cors())
-  app.use(mount('/keynotes', serve(`${__dirname}/../../keynotes/`)))
+  app.use(mount('/docs', serve(`${__dirname}/../../docs/`)))
   apollo_server.applyMiddleware({ app })
 
   await new Promise<void>((resolve) => {
