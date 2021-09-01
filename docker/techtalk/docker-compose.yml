@@ -8,7 +8,7 @@ networks:
 
 services:
   api:
-    image: techtalk/api:20110809
+    image: techtalk/api:20210901
     build:
       context: ../..
       dockerfile: Dockerfile

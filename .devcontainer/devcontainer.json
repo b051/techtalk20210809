@@ -1,5 +1,5 @@
 {
-	"name": "techtalk20210809",
+	"name": "techtalk20210901",
 
 	"dockerComposeFile": [
 		"../docker/techtalk/docker-compose.yml"
