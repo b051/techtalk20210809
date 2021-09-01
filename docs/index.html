@@ -53,7 +53,7 @@
 							<a href="https://cjting.me/2020/03/13/rsa/">RSA 的原理与实现 - CJ Ting's Blog</a>
 						</aside>
 						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers>
-							function(email: string, password: string) {
+							function login(email: string, password: string) {
 								const user = getUser(email)
 								if (email_not_found_or_wrong_password) {
 									throw new Error(...)
@@ -66,7 +66,7 @@
 					<section data-auto-animate data-auto-animate-unmatched="fade">
 						<h3>Login</h3>
 						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers="|6">
-							function(email: string, password: string) {
+							function login(email: string, password: string) {
 								const user = getUser(email)
 								if (email_not_found_or_wrong_password) {
 									throw new Error(...)
@@ -137,6 +137,7 @@
 							<li>Web/Native<ul>
 								<li class="fragment fade-up">only visible to CI/CD</li>
 								<li class="fragment fade-up">key-value service</li>
+								<li class="fragment fade-up">Keychain</li>
 							</ul></li>
 						</ul>
 					</section>
@@ -171,16 +172,16 @@
 						<p class="fragment fade-up">Leak!</p>
 					</section>
 
-					<section>
+					<section style="text-align: left;">
 						<h3>Choose a hashing method</h3>
-						<ul style="text-align: left;">
-							<li>argon2</li>
-							<li>bcrypt</li>
+						<ul style="font-size: 0.8em;">
+							<li>argon2 <span class="fragment fade-up highlight-blue">- PHC winner</span></li>
+							<li>bcrypt <span class="fragment fade-up highlight-blue">- used by Auth0</span></li>
 							<li>hmac</li>
 							<li>ldap</li>
 							<li>md5</li>
 							<li>sha512</li>
-							<li>pbkdf2</li>
+							<li>pbkdf2 <span class="fragment fade-up highlight-blue">- used by 1Password</span></li>
 						</ul>
 						<p>...</p>
 					</section>
@@ -213,7 +214,7 @@
 								method: "POST",
 								request: {
 									email: ctx.request.email,
-									password: "[redact]"
+									password: "[REDACTED]"
 								}
 							}))
 						</code></pre>
@@ -235,7 +236,7 @@
 						<h3>Json Web Token</h3>
 						
 						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers>
-							function(email: string, password: string) {
+							function login(email: string, password: string) {
 								const user = getUser(email)
 								if (!user || !user.verifyPassword(password)) {
 									throw new Error(...)
@@ -247,22 +248,25 @@
 
 					<section data-auto-animate data-auto-animate-unmatched="fade">
 						<h3>Json Web Token</h3>
-						<p>Should we do:</p>
+						<p style="text-align: left; font-size: 0.8em;">Should we do:</p>
 						<pre data-id="authentication"><code class="hljs javascript" data-trim data-line-numbers>
-							function(email: string, password: string) {
+							function login(email: string, password: string) {
 								...
 								return access_token({
 									"sub": user.id,
-									"user": JSON.stringify(user),
-									"groups": ...
+									"billing_address": ...,
+									"last_ip": ...
 								})
 							}
 						</code></pre>
+						<p class="fragment fade-up">?</p>
 					</section>
 
 					<section>
 						<h3>Json Web Token Structure</h3>
 						<pre><code data-trim clas="hljs javascript">
+							token = 'ey****.ey****.****'
+
 							token.split('.').map(part => Buffer.from(part, 'base64'))
 							=>
 							[
@@ -304,8 +308,8 @@
 					</section>
 
 					<section>
-						<p>When to use asymmetric encryption?</p>
-						<ul>
+						<h3>When to use asymmetric encryption?</h3>
+						<ul style="font-size: 0.8em;">
 							<li class="fragment">Can't share the same secret</li>
 							<li class="fragment">Need to regularly rotate your secret</li>
 							<li class="fragment">Micro-services</li>
@@ -374,6 +378,7 @@
 							coefficient       INTEGER,  -- (inverse of q) mod p
 							otherPrimeInfos   OtherPrimeInfos OPTIONAL
 						</code></pre>
+						<p class="fragment">Do not share your private_key</p>
 					</section>
 				</section>
 
